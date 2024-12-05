@@ -1,0 +1,5 @@
+/.vs
+
+/TodoApp/bin/*
+/TodoApp/obj/*
+/TodoApp/TodoApp.csproj.user

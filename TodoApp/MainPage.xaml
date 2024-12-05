@@ -1,0 +1,49 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TodoApp.MainPage"
+             Title="To-Do List">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="10">
+            <Button Text="Add Task" Clicked="OnAddTaskClicked" />
+            <CollectionView ItemsSource="{Binding Tasks}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Edit" BackgroundColor="Blue"
+                                               Command="{Binding BindingContext.EditTaskCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" 
+                                               CommandParameter="{Binding .}" />
+                                    <SwipeItem Text="Delete" BackgroundColor="Red" 
+                                               Command="{Binding BindingContext.DeleteTaskCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" 
+                                               CommandParameter="{Binding Id}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Grid Padding="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="10*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox Grid.Row="0" Grid.Column="0"
+                                          IsChecked="{Binding IsCompleted}" 
+                                          CheckedChanged="OnTaskCheckedChanged" />
+
+                                <Label Grid.Row="0" Grid.Column="1" 
+                                        Text="{Binding Title}" FontSize="18" />
+
+                                <Label Grid.Row="1" Grid.Column="1" 
+                                    Text="{Binding ReminderTime, StringFormat='Reminder: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" />
+                                
+                            </Grid>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>
