@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using Plugin.LocalNotification;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using TodoApp.Models;
 using TodoApp.Services;
 
@@ -16,6 +18,37 @@ namespace TodoApp
             _databaseService = new DatabaseService(dbPath);
             Tasks = new ObservableCollection<TaskItem>(_databaseService.GetTasks());
             BindingContext = this;
+
+            ScheduleNotificationsForTasks();
+        }
+
+        private void ScheduleNotificationsForTasks()
+        {
+            foreach (var task in Tasks)
+            {
+                if (!task.IsCompleted && task.ReminderTime > DateTime.Now)
+                {
+                    ScheduleNotification(task);
+                }
+            }
+        }
+
+        private void ScheduleNotification(TaskItem task)
+        {
+            var notificationRequest = new NotificationRequest
+            {
+                NotificationId = task.Id,
+                Title = "Task Reminder",
+                Subtitle = "Task",
+                Description = task.Title,
+                BadgeNumber = 42,
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = task.ReminderTime
+                }
+            };
+
+            LocalNotificationCenter.Current.Show(notificationRequest);
         }
 
         private void OnTaskCheckedChanged(object sender, CheckedChangedEventArgs e)
@@ -26,6 +59,11 @@ namespace TodoApp
             {
                 task.IsCompleted = e.Value;
                 _databaseService.SaveTask(task); // Зберігаємо зміни у базі даних
+
+                if (task.IsCompleted)
+                {
+                    LocalNotificationCenter.Current.Cancel(task.Id);
+                }
             }
         }
         private async void OnAddTaskClicked(object sender, EventArgs e)
@@ -47,6 +85,8 @@ namespace TodoApp
                 };
                 _databaseService.SaveTask(newTask);
                 Tasks.Add(newTask);
+
+                ScheduleNotification(newTask);
             }
         }
 
@@ -106,11 +146,11 @@ namespace TodoApp
                 try 
                 {
                     _databaseService.DeleteTask(id);
+                    LocalNotificationCenter.Current.Cancel(id);
                     Tasks.Remove(Tasks.First(t => t.Id == id));
                 }
                 catch { }
             });
-
 
         private Command<TaskItem> _editTaskCommand;
         public Command<TaskItem> EditTaskCommand =>
@@ -139,10 +179,40 @@ namespace TodoApp
             var index = Tasks.IndexOf(task);
             Tasks.RemoveAt(index);
             Tasks.Insert(index, task);
+
+            if(task.Id != 0)
+                LocalNotificationCenter.Current.Cancel(task.Id);
+
+            ScheduleNotification(task);
         }
 
 
+        private void OnNotificationClicked(object sender, EventArgs e)
+        {
+            var request = new NotificationRequest
+            {
+                NotificationId = 1000,
+                Title = "Subscribe for me",
+                Subtitle = "Hello Friends",
+                Description = "Stay Tuned",
+                BadgeNumber = 42,
+                Schedule = new NotificationRequestSchedule
+                {
+                    NotifyTime = DateTime.Now.AddSeconds(5),
+                    NotifyRepeatInterval = TimeSpan.FromDays(1)
+                },
+                Android = new Plugin.LocalNotification.AndroidOption.AndroidOptions
+                {
+                    AutoCancel = true,
+                    IconSmallName =
+                    {
+                        ResourceName = "home",
+                    }
+                }
+            };
 
+            LocalNotificationCenter.Current.Show(request);
+        }
 
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace TodoApp
+﻿using Plugin.LocalNotification;
+
+namespace TodoApp
 {
     public partial class App : Application
     {
@@ -7,6 +9,12 @@
             InitializeComponent();
 
             MainPage = new AppShell();
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            //LocalNotificationCenter.Current.RequestNotificationPermission();
         }
     }
 }
