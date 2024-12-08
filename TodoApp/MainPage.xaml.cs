@@ -1,5 +1,7 @@
 ﻿using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
 using System.Collections.ObjectModel;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using TodoApp.Models;
 using TodoApp.Services;
@@ -45,7 +47,17 @@ namespace TodoApp
                 Schedule = new NotificationRequestSchedule
                 {
                     NotifyTime = task.ReminderTime
-                }
+                },
+                Android = new AndroidOptions
+                {
+                    ChannelId = "default_channel",
+                    AutoCancel = true,
+                    IconSmallName =
+                    {
+                        ResourceName = "home",
+                    },
+                },
+                //Sound = DeviceInfo.Platform == DevicePlatform.Android ? "kashmir" : "kashmir.mp3",
             };
 
             LocalNotificationCenter.Current.Show(notificationRequest);
@@ -120,7 +132,7 @@ namespace TodoApp
                             Text = "OK",
                             Command = new Command(async () =>
                             {
-                                await Application.Current.MainPage.Navigation.PopModalAsync();
+                                _ = await Application.Current.MainPage.Navigation.PopModalAsync();
                             })
                         }
                     }
@@ -186,32 +198,17 @@ namespace TodoApp
             ScheduleNotification(task);
         }
 
-
         private void OnNotificationClicked(object sender, EventArgs e)
         {
-            var request = new NotificationRequest
+            var newTask = new TaskItem()
             {
-                NotificationId = 1000,
-                Title = "Subscribe for me",
-                Subtitle = "Hello Friends",
-                Description = "Stay Tuned",
-                BadgeNumber = 42,
-                Schedule = new NotificationRequestSchedule
-                {
-                    NotifyTime = DateTime.Now.AddSeconds(5),
-                    NotifyRepeatInterval = TimeSpan.FromDays(1)
-                },
-                Android = new Plugin.LocalNotification.AndroidOption.AndroidOptions
-                {
-                    AutoCancel = true,
-                    IconSmallName =
-                    {
-                        ResourceName = "home",
-                    }
-                }
+                Description = "Description",
+                Id = 8,
+                IsCompleted = false,
+                ReminderTime = DateTime.Now.AddSeconds(3),
+                Title = "Click button..."
             };
-
-            LocalNotificationCenter.Current.Show(request);
+            ScheduleNotification(newTask);
         }
 
     }

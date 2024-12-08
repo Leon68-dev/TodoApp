@@ -18,16 +18,6 @@ namespace TodoApp
         public override void OnCreate()
         {
             base.OnCreate();
-
-            //var channel = new NotificationChannelRequest
-            //{
-            //    Id = "default_channel",
-            //    Name = "Default Notifications",
-            //    Description = "Notifications for task reminders",
-            //    Importance = AndroidImportance.High
-            //};
-
-            //LocalNotificationCenter.CreateNotificationChannel();
         }
 
     }

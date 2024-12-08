@@ -11,10 +11,5 @@ namespace TodoApp
             MainPage = new AppShell();
         }
 
-        protected override void OnStart()
-        {
-            base.OnStart();
-            //LocalNotificationCenter.Current.RequestNotificationPermission();
-        }
     }
 }
