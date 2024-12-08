@@ -43,7 +43,7 @@ namespace TodoApp
                 Title = "Task Reminder",
                 Subtitle = "Task",
                 Description = task.Title,
-                BadgeNumber = 42,
+                //BadgeNumber = 1,
                 Schedule = new NotificationRequestSchedule
                 {
                     NotifyTime = task.ReminderTime
